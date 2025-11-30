@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人网页 | 您的姓名</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #ff7e5f;
+            --light-color: #f5f7fa;
+            --dark-color: #2c3e50;
+            --text-color: #333;
+            --text-light: #777;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        section {
+            padding: 80px 0;
+        }
+        
+        h1, h2, h3, h4 {
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #ff6b4a;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent-color);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* 导航栏 */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* 首页区域 */
+        #home {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 150px 0 100px;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .profile-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        /* 关于我 */
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .about-text {
+            flex: 1;
+        }
+        
+        .about-img {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .about-img img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 技能 */
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .skill-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .skill-card i {
+            font-size: 40px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .skill-card h3 {
+            font-size: 1.5rem;
+        }
+        
+        /* 作品集 */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .portfolio-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .portfolio-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .portfolio-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .portfolio-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+        }
+        
+        .portfolio-item:hover .portfolio-overlay {
+            transform: translateY(0);
+        }
+        
+        /* 联系方式 */
+        #contact {
+            background-color: var(--dark-color);
+            color: white;
+        }
+        
+        #contact .section-title {
+            color: white;
+        }
+        
+        #contact .section-title::after {
+            background-color: var(--accent-color);
+        }
+        
+        .contact-content {
+            display: flex;
+            gap: 50px;
+        }
+        
+        .contact-info, .contact-form {
+            flex: 1;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .contact-item i {
+            font-size: 20px;
+            margin-right: 15px;
+            color: var(--accent-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        /* 页脚 */
+        footer {
+            background-color: #1a2530;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .social-links {
+            margin-bottom: 20px;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            color: white;
+            font-size: 20px;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                margin: 10px 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .contact-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">个人品牌</div>
+                <ul class="nav-links">
+                    <li><a href="#home">首页</a></li>
+                    <li><a href="#about">关于我</a></li>
+                    <li><a href="#skills">技能</a></li>
+                    <li><a href="#portfolio">作品集</a></li>
+                    <li><a href="#contact">联系我</a></li>
+                </ul>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 首页区域 -->
+    <section id="home">
+        <div class="container">
+            <div class="hero-content">
+                <img src="https://via.placeholder.com/200" alt="个人照片" class="profile-img">
+                <h1>您的姓名</h1>
+                <p>职业/专业方向 | 个人简介</p>
+                <p>欢迎来到我的个人网页，这里展示我的作品、技能和经历。</p>
+                <a href="#portfolio" class="btn">查看我的作品</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于我 -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">关于我</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>我是[您的姓名]</h3>
+                    <p>这里可以写一段关于自己的详细介绍，包括您的背景、经历、兴趣和个人目标等。您可以分享您的职业发展历程，或者您对某个领域的热情。</p>
+                    <p>例如：我是一名前端开发工程师，拥有5年的Web开发经验。我热爱创造美观且功能强大的网站和应用程序，致力于提供最佳的用户体验。</p>
+                    <p>在我的职业生涯中，我参与了多个大型项目，积累了丰富的实践经验。我不断学习新技术，保持对行业趋势的敏感度。</p>
+                    <a href="#" class="btn">下载简历</a>
+                </div>
+                <div class="about-img">
+                    <img src="https://via.placeholder.com/500x400" alt="关于我图片">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技能 -->
+    <section id="skills">
+        <div class="container">
+            <h2 class="section-title">我的技能</h2>
+            <div class="skills-container">
+                <div class="skill-card">
+                    <i class="fas fa-code"></i>
+                    <h3>前端开发</h3>
+                    <p>熟练掌握HTML5、CSS3、JavaScript等前端技术，能够创建响应式、用户友好的网页界面。</p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-paint-brush"></i>
+                    <h3>UI/UX设计</h3>
+                    <p>具备良好的设计感，能够使用设计工具创建直观、美观的用户界面和用户体验。</p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>移动端开发</h3>
+                    <p>熟悉移动端开发技术，能够创建适配各种设备的移动应用和响应式网站。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 作品集 -->
+    <section id="portfolio">
+        <div class="container">
+            <h2 class="section-title">作品集</h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <img src="https://via.placeholder.com/400x300" alt="项目1">
+                    <div class="portfolio-overlay">
+                        <h3>项目标题1</h3>
+                        <p>项目描述：这是一个使用HTML、CSS和JavaScript开发的响应式网站。</p>
+                        <a href="#" class="btn">查看详情</a>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://via.placeholder.com/400x300" alt="项目2">
+                    <div class="portfolio-overlay">
+                        <h3>项目标题2</h3>
+                        <p>项目描述：这是一个使用React框架开发的单页面应用程序。</p>
+                        <a href="#" class="btn">查看详情</a>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://via.placeholder.com/400x300" alt="项目3">
+                    <div class="portfolio-overlay">
+                        <h3>项目标题3</h3>
+                        <p>项目描述：这是一个移动端优先的电子商务网站设计。</p>
+                        <a href="#" class="btn">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系方式 -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title">联系我</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>获取联系</h3>
+                    <p>如果您对我的工作感兴趣，或者有任何问题，请随时与我联系。</p>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>您的地址，城市，国家</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <p>+86 123 4567 8900</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <p>your.email@example.com</p>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="您的姓名" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control" placeholder="您的邮箱" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="主题" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="您的消息" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">发送消息</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-weibo"></i></a>
+            </div>
+            <p>&copy; 2023 您的姓名. 保留所有权利.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 移动端点击后关闭菜单
+                    if (window.innerWidth <= 768) {
+                        document.querySelector('.nav-links').classList.remove('active');
+                    }
+                }
+            });
+        });
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            }
+        });
+    </script>
+</body>
+</html>
