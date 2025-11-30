@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学术个人主页</title>
+    <style>
+        :root {
+            --primary-color: #1A3A6C; /* 靛蓝 */
+            --accent-color: #C63F3A;  /* 朱红 */
+            --background-color: #F5F5F0; /* 米白 */
+            --text-color: #333333; /* 墨黑 */
+            --light-gray: #E8E8E8;
+            --font-family: "Times New Roman", "SimSun", serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 220px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: block;
+            border: 3px solid white;
+            object-fit: cover;
+        }
+        
+        .name {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: normal;
+        }
+        
+        .title {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        
+        .nav-links {
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-links a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-links a.active {
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        /* 右侧内容区域 */
+        .content {
+            flex: 1;
+            margin-left: 220px;
+            padding: 2rem 3rem;
+            max-width: 900px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: normal;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        h2 {
+            font-size: 1.6rem;
+            margin-top: 2rem;
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        .section {
+            margin-bottom: 2.5rem;
+        }
+        
+        /* 首页样式 */
+        .welcome {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .research-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .research-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .research-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .research-card h3 {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        /* 简历页样式 */
+        .timeline {
+            position: relative;
+            margin: 2rem 0;
+        }
+        
+        .timeline-item {
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+        }
+        
+        .timeline-item:after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1.5rem;
+            bottom: -2rem;
+            width: 2px;
+            background-color: var(--light-gray);
+        }
+        
+        .timeline-item:last-child:after {
+            display: none;
+        }
+        
+        .timeline-date {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        /* 研究页样式 */
+        .publication-list {
+            list-style: none;
+        }
+        
+        .publication-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .publication-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .publication-authors {
+            font-style: italic;
+            margin-bottom: 0.3rem;
+        }
+        
+        .publication-venue {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .publication-links a {
+            color: var(--primary-color);
+            margin-right: 1rem;
+            text-decoration: none;
+        }
+        
+        /* 动态页样式 */
+        .blog-post {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .blog-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .blog-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .read-more {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+            }
+            
+            .content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+            
+            .nav-links {
+                display: flex;
+                justify-content: space-around;
+                flex-wrap: wrap;
+            }
+            
+            .nav-links li {
+                margin: 0.3rem;
+            }
+            
+            .nav-links a {
+                padding: 0.5rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧导航栏 -->
+    <div class="sidebar">
+        <img src="images/avatar.jpg" alt="个人头像" class="profile-img">
+        <h1 class="name">张明远</h1>
+        <p class="title">计算机科学教授</p>
+        
+        <ul class="nav-links">
+            <li><a href="#home" class="nav-link active" data-page="home">首页 / Home</a></li>
+            <li><a href="#profile" class="nav-link" data-page="profile">简历 / Profile</a></li>
+            <li><a href="#research" class="nav-link" data-page="research">研究 / Research</a></li>
+            <li><a href="#blog" class="nav-link" data-page="blog">动态 / Blog</a></li>
+        </ul>
+    </div>
+    
+    <!-- 右侧内容区域 -->
+    <div class="content">
+        <!-- 首页 -->
+        <div id="home" class="page active">
+            <h1>欢迎来到我的学术主页</h1>
+            <p class="welcome">我是张明远，XX大学计算机科学系教授。我的研究方向包括人工智能、机器学习和数据挖掘。本网站展示我的学术研究、教学活动和最新动态。</p>
+            
+            <div class="section">
+                <h2>最新动态</h2>
+                <p>• 2023年10月：在NeurIPS 2023会议上发表论文《基于深度强化学习的自适应优化方法》</p>
+                <p>• 2023年9月：主持国家自然科学基金重点项目"面向复杂场景的智能决策系统"</p>
+                <p>• 2023年8月：受邀参加国际人工智能大会并作主题报告</p>
+            </div>
+            
+            <div class="section">
+                <h2>研究亮点</h2>
+                <div class="research-highlights">
+                    <div class="research-card">
+                        <h3>自适应机器学习</h3>
+                        <p>研究如何使机器学习模型能够适应动态变化的环境和数据分布。</p>
+                    </div>
+                    <div class="research-card">
+                        <h3>可解释AI</h3>
+                        <p>开发能够提供透明决策过程的机器学习方法，增强AI系统的可信度。</p>
+                    </div>
+                    <div class="research-card">
+                        <h3>联邦学习</h3>
+                        <p>在保护数据隐私的前提下，实现多方数据协作的机器学习范式。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 简历页 -->
+        <div id="profile" class="page">
+            <h1>简历 / Profile</h1>
+            
+            <div class="section">
+                <h2>教育背景</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">2008-2012</div>
+                        <h3>博士 - 计算机科学</h3>
+                        <p>XX大学，研究方向：机器学习与数据挖掘</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2004-2008</div>
+                        <h3>学士 - 计算机科学与技术</h3>
+                        <p>XX大学，优秀毕业生</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>工作经历</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">2018-至今</div>
+                        <h3>教授</h3>
+                        <p>XX大学计算机科学系</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2014-2018</div>
+                        <h3>副教授</h3>
+                        <p>XX大学计算机科学系</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2012-2014</div>
+                        <h3>博士后研究员</h3>
+                        <p>XX研究院人工智能实验室</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>教学课程</h2>
+                <ul>
+                    <li>机器学习导论</li>
+                    <li>深度学习理论与应用</li>
+                    <li>数据挖掘</li>
+                    <li>人工智能前沿专题</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 研究页 -->
+        <div id="research" class="page">
+            <h1>研究 / Research</h1>
+            
+            <div class="section">
+                <h2>研究方向</h2>
+                <p>我的研究主要关注机器学习、数据挖掘和人工智能领域的前沿问题，特别关注以下方向：</p>
+                <ul>
+                    <li>自适应机器学习系统</li>
+                    <li>可解释人工智能</li>
+                    <li>联邦学习与隐私保护</li>
+                    <li>强化学习与决策系统</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>代表性论文</h2>
+                <ul class="publication-list">
+                    <li class="publication-item">
+                        <div class="publication-title">自适应机器学习：理论与方法</div>
+                        <div class="publication-authors">张明远，李思，王建国</div>
+                        <div class="publication-venue">《人工智能研究》，2023</div>
+                        <div class="publication-links">
+                            <a href="#">PDF</a>
+                            <a href="#">代码</a>
+                            <a href="#">引用</a>
+                        </div>
+                    </li>
+                    <li class="publication-item">
+                        <div class="publication-title">面向非独立同分布数据的联邦学习优化</div>
+                        <div class="publication-authors">张明远，陈小华</div>
+                        <div class="publication-venue">NeurIPS 2022</div>
+                        <div class="publication-links">
+                            <a href="#">PDF</a>
+                            <a href="#">代码</a>
+                            <a href="#">引用</a>
+                        </div>
+                    </li>
+                    <li class="publication-item">
+                        <div class="publication-title">基于注意力机制的可解释推荐系统</div>
+                        <div class="publication-authors">张明远，赵欣</div>
+                        <div class="publication-venue">KDD 2021</div>
+                        <div class="publication-links">
+                            <a href="#">PDF</a>
+                            <a href="#">代码</a>
+                            <a href="#">引用</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>科研项目</h2>
+                <ul>
+                    <li>国家自然科学基金重点项目：面向复杂场景的智能决策系统 (2023-2026)</li>
+                    <li>国家重点研发计划：新一代人工智能关键技术研究 (2020-2023)</li>
+                    <li>教育部人文社科基金：人工智能伦理与社会影响研究 (2019-2022)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 动态页 -->
+        <div id="blog" class="page">
+            <h1>动态 / Blog</h1>
+            
+            <div class="blog-post">
+                <div class="blog-date">2023年10月15日</div>
+                <h2 class="blog-title">参加NeurIPS 2023会议心得</h2>
+                <p>今年的NeurIPS会议在洛杉矶举行，我有幸在会上报告了我们团队的最新研究成果。会议期间，我特别关注了关于大模型优化和联邦学习的最新进展...</p>
+                <a href="#" class="read-more">阅读更多</a>
+            </div>
+            
+            <div class="blog-post">
+                <div class="blog-date">2023年9月20日</div>
+                <h2 class="blog-title">新学期课程《深度学习理论与应用》开课</h2>
+                <p>本学期我继续讲授《深度学习理论与应用》课程，今年对课程内容进行了全面更新，增加了关于Transformer架构、自监督学习和扩散模型等前沿内容...</p>
+                <a href="#" class="read-more">阅读更多</a>
+            </div>
+            
+            <div class="blog-post">
+                <div class="blog-date">2023年8月5日</div>
+                <h2 class="blog-title">暑期研究实习项目总结</h2>
+                <p>今年暑期，我们实验室接待了来自多所高校的10名本科生研究实习生。在为期两个月的实习中，同学们参与了多个研究项目，取得了令人鼓舞的进展...</p>
+                <a href="#" class="read-more">阅读更多</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 移除所有活动状态
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    pages.forEach(p => p.classList.remove('active'));
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    const pageId = this.getAttribute('data-page');
+                    document.getElementById(pageId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
