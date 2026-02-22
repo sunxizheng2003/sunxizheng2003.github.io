@@ -33,19 +33,19 @@ const ResearchGateIcon = ({ className }) => (
 );
 
 // 完美的几何数学重构 Web of Science (Clarivate) 标志
-// 通过高精度贝塞尔弧线完美实现：外侧微鼓(约6°弧度)，内外平行，顶角精确相切，中心形成正三角形镂空
+// 核心逻辑：更大半径的圆弧(弧度更平缓)，内外绝对平行，半径差(厚度)调小，内部形成带弧度正三角形镂空
 const WosIcon = ({ className }) => (
   <svg viewBox="0 0 24 24" className={className}>
     <g transform="translate(12, 12)">
-      {/* 左侧弧形块 (自适应主题色) */}
-      <path d="M -3 -5.1962 A 100 100 0 0 0 -3 5.1962 L -8 5.1962 A 105 105 0 0 1 -8 -5.1962 Z" className="fill-current group-hover:fill-white transition-colors duration-300" />
+      {/* 左侧弧形块 (支持 fill-current 自适应主题色) */}
+      <path d="M -2.5 -4.33 A 80 80 0 0 0 -2.5 4.33 L -7 4.33 A 84.5 84.5 0 0 1 -7 -4.33 Z" className="fill-current group-hover:fill-white transition-colors duration-300" />
       {/* 右上弧形块 (紫色) */}
       <g transform="rotate(120)">
-        <path d="M -3 -5.1962 A 100 100 0 0 0 -3 5.1962 L -8 5.1962 A 105 105 0 0 1 -8 -5.1962 Z" className="fill-[#8A2BE2] group-hover:fill-white transition-colors duration-300" />
+        <path d="M -2.5 -4.33 A 80 80 0 0 0 -2.5 4.33 L -7 4.33 A 84.5 84.5 0 0 1 -7 -4.33 Z" className="fill-[#8A2BE2] group-hover:fill-white transition-colors duration-300" />
       </g>
       {/* 右下弧形块 (绿色) */}
       <g transform="rotate(240)">
-        <path d="M -3 -5.1962 A 100 100 0 0 0 -3 5.1962 L -8 5.1962 A 105 105 0 0 1 -8 -5.1962 Z" className="fill-[#18D316] group-hover:fill-white transition-colors duration-300" />
+        <path d="M -2.5 -4.33 A 80 80 0 0 0 -2.5 4.33 L -7 4.33 A 84.5 84.5 0 0 1 -7 -4.33 Z" className="fill-[#18D316] group-hover:fill-white transition-colors duration-300" />
       </g>
     </g>
   </svg>
@@ -89,7 +89,6 @@ const FadeInSection = ({ children, className = "" }) => {
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  // 控制弹窗的 State：记录当前被点击的项目数据
   const [selectedProject, setSelectedProject] = useState(null);
 
   const navLinks = [
@@ -100,19 +99,14 @@ export default function App() {
     { id: 'cv', label: '简历', en: 'CV' }
   ];
 
-  // ==========================================
-  // 📚 研究项目数据集中管理 (在这里轻松添加长篇内容！)
-  // ==========================================
   const researchProjects = [
     {
       id: 1,
       image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       titleZh: "青藏高原高山植物群落时空演变",
       titleEn: "Spatiotemporal Evolution of Alpine Plant Communities",
-      // 这里是卡片上显示的“简短摘要”
       summaryZh: "基于长期的野外监测数据，结合遥感影像，分析过去三十年间高山林线交错区植物群落的物种组成变化及其对极端气候事件的响应。",
       summaryEn: "Based on long-term field monitoring data and remote sensing imagery, this project analyzes the changes in species composition of plant communities in the alpine ecotone and their responses to extreme climate events over the past 30 years.",
-      // 这里是弹窗里显示的“详细内容”（数组的每一项代表一个自然段落）
       detailsZh: [
         "高山生态系统对全球气候变化极为敏感。过去半个世纪以来，青藏高原经历了显著的升温过程。本项目依托连续 30 年的固定样地监测数据，旨在揭示高山林线交错区（Alpine Ecotone）植物群落结构的时空演变规律。",
         "在研究方法上，我们不仅采用了传统的样方调查记录物种多度与盖度，还引入了高分辨率无人机遥感技术，对群落尺度的空间格局进行精细刻画。结合气象站点的数据，我们建立了一系列线性混合效应模型（LMMs）。",
@@ -144,7 +138,6 @@ export default function App() {
     }
   ];
 
-  // 监听弹窗开启时，禁止背景页面滚动
   useEffect(() => {
     if (selectedProject) {
       document.body.style.overflow = 'hidden';
@@ -191,18 +184,14 @@ export default function App() {
   return (
     <div className="min-h-screen bg-stone-50 text-stone-800 font-sans selection:bg-emerald-100 selection:text-emerald-900 leading-relaxed">
       
-      {/* --- 全屏弹窗组件 (Modal) --- */}
       {selectedProject && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-12">
-          {/* 模糊遮罩层 - 点击空白处关闭 */}
           <div 
             className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm transition-opacity"
             onClick={() => setSelectedProject(null)}
           ></div>
           
-          {/* 弹窗内容区 */}
           <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full animate-in fade-in zoom-in-95 duration-300">
-            {/* 关闭按钮 (绝对定位，不随内容滚动) */}
             <button 
               onClick={() => setSelectedProject(null)}
               className="absolute top-5 right-5 z-10 p-2.5 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-full transition-all"
@@ -210,10 +199,7 @@ export default function App() {
               <X className="w-5 h-5" />
             </button>
 
-            {/* 弹窗详细文本区 (包含标题和图片，整体可上下滑动) */}
             <div className="overflow-y-auto p-6 md:p-10 lg:p-12 space-y-10">
-              
-              {/* 随内容滚动的标题部分 */}
               <div className="pr-12 border-b border-stone-100 pb-8">
                 <h2 className="text-2xl md:text-3xl font-bold text-stone-900 mb-3 leading-snug">
                   {selectedProject.titleZh}
@@ -223,12 +209,10 @@ export default function App() {
                 </p>
               </div>
 
-              {/* 优雅的文章内部配图 */}
               <div className="w-full h-56 sm:h-72 lg:h-80 rounded-xl overflow-hidden bg-stone-100">
                 <img src={selectedProject.image} alt="Project Cover" className="w-full h-full object-cover" />
               </div>
 
-              {/* 中文正文段落 */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-1.5 h-6 bg-emerald-600 rounded-full"></div>
@@ -241,10 +225,8 @@ export default function App() {
                 ))}
               </div>
 
-              {/* 分割线 */}
               <div className="w-full h-px bg-stone-100"></div>
 
-              {/* 英文正文段落 */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-1.5 h-6 bg-stone-300 rounded-full"></div>
@@ -261,7 +243,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 导航栏 */}
       <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-50 border-b border-stone-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
@@ -300,7 +281,6 @@ export default function App() {
         </div>
       </nav>
 
-      {/* Hero 首页区域 */}
       <section id="home" className="pt-24 pb-8 lg:pt-32 lg:pb-10 overflow-hidden relative min-h-[85vh] flex flex-col justify-center">
         <div className="absolute top-20 right-0 w-[40rem] h-[40rem] bg-emerald-100/50 rounded-full blur-3xl -z-10 opacity-60"></div>
         <div className="max-w-6xl mx-auto px-6 lg:px-8 w-full flex flex-col flex-1">
@@ -367,7 +347,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* 关于我 */}
       <section id="about" className="py-24">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <FadeInSection>
@@ -417,7 +396,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* 研究内容 */}
       <section id="research" className="py-24 bg-white border-y border-stone-200">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <FadeInSection>
@@ -428,7 +406,6 @@ export default function App() {
               </h2>
             </div>
             
-            {/* 动态渲染项目卡片 */}
             <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
               {researchProjects.map((project) => (
                 <div key={project.id} className="group bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
@@ -443,7 +420,6 @@ export default function App() {
                       <p className="text-stone-600">{project.summaryZh}</p>
                       <p className="text-sm text-stone-400 line-clamp-3">{project.summaryEn}</p>
                     </div>
-                    {/* 点击按钮触发弹窗 */}
                     <button 
                       onClick={() => setSelectedProject(project)}
                       className="inline-flex items-center px-4 py-2 border border-stone-200 rounded-lg text-sm font-medium text-stone-600 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-colors self-start cursor-pointer"
@@ -458,7 +434,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* 学术发表 */}
       <section id="publications" className="py-24">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <FadeInSection>
@@ -558,9 +533,7 @@ export default function App() {
 
       {/* 简历 CV */}
       <section id="cv" className="py-24 bg-white border-t border-stone-200 relative overflow-hidden">
-        <div className="absolute top-1/2 left-3/4 -translate-y-1/2 opacity-[0.03] pointer-events-none grayscale">
-           <img src={pkuLogoUrl} alt="PKU watermark" className="w-[800px] h-[800px] object-contain" />
-        </div>
+        {/* 背景超大号隐约北大水印 Logo 已移除 */}
 
         <div className="max-w-4xl mx-auto px-6 lg:px-8 relative z-10">
           <FadeInSection>
@@ -575,11 +548,11 @@ export default function App() {
 
             <div className="space-y-8">
               
-              {/* 博士学历卡片（完美网格对齐版） */}
+              {/* 博士学历卡片 */}
               <div className="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-300 group flex flex-col md:block">
                 
-                {/* 桌面端：CSS Grid 精确空隙对齐 */}
-                <div className="hidden md:grid grid-cols-[11rem_1fr] gap-x-8">
+                {/* 桌面端：CSS Grid 精确空隙对齐 (左列加宽到12rem避免换行溢出) */}
+                <div className="hidden md:grid grid-cols-[12rem_1fr] gap-x-8">
                   {/* 第一行：学校 */}
                   <div className="flex items-center border-r border-stone-100 pb-7 pr-6">
                     <img src={pkuLogoUrl} alt="Peking University Logo" className="w-[4.25rem] h-[4.25rem] object-contain drop-shadow-sm" />
@@ -589,9 +562,9 @@ export default function App() {
                     <p className="text-[0.7rem] text-stone-400 font-medium tracking-widest uppercase mt-1.5">Peking University, College of Urban and Environmental Sciences</p>
                   </div>
                   
-                  {/* 第二行：学位 */}
+                  {/* 第二行：学位 - 添加了 whitespace-nowrap 保证在一行显示 */}
                   <div className="flex items-center border-r border-stone-100 pt-7 pr-6">
-                    <span className="text-emerald-700 text-xs font-bold uppercase tracking-widest bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100/50">
+                    <span className="text-emerald-700 text-xs font-bold uppercase tracking-widest bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100/50 whitespace-nowrap">
                       2026.09 - PRESENT
                     </span>
                   </div>
@@ -605,7 +578,7 @@ export default function App() {
                 <div className="md:hidden flex flex-col">
                   <div className="flex items-center justify-between border-b border-stone-100 pb-5 mb-5">
                     <img src={pkuLogoUrl} alt="Peking University Logo" className="w-14 h-14 object-contain drop-shadow-sm" />
-                    <span className="text-emerald-700 text-[0.65rem] font-bold uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded border border-emerald-100/50">
+                    <span className="text-emerald-700 text-[0.65rem] font-bold uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded border border-emerald-100/50 whitespace-nowrap">
                       2026.09 - PRESENT
                     </span>
                   </div>
@@ -622,11 +595,11 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 本科学历卡片（完美网格对齐版） */}
+              {/* 本科学历卡片 */}
               <div className="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md hover:border-stone-400 transition-all duration-300 group flex flex-col md:block">
                 
-                {/* 桌面端：CSS Grid 精确空隙对齐 */}
-                <div className="hidden md:grid grid-cols-[11rem_1fr] gap-x-8">
+                {/* 桌面端：CSS Grid */}
+                <div className="hidden md:grid grid-cols-[12rem_1fr] gap-x-8">
                   {/* 第一行：学校 */}
                   <div className="flex items-center border-r border-stone-100 pb-7 pr-6">
                     <img src={pkuLogoUrl} alt="Peking University Logo" className="w-[4.25rem] h-[4.25rem] object-contain drop-shadow-sm opacity-90" />
@@ -636,15 +609,15 @@ export default function App() {
                     <p className="text-[0.7rem] text-stone-400 font-medium tracking-widest uppercase mt-1.5">Peking University, College of Urban and Environmental Sciences</p>
                   </div>
                   
-                  {/* 第二行：学位 */}
+                  {/* 第二行：学位 - 添加了 whitespace-nowrap 保证在一行显示 */}
                   <div className="flex items-center border-r border-stone-100 pt-7 pr-6">
-                    <span className="text-stone-600 text-xs font-bold uppercase tracking-widest bg-stone-100 px-3 py-1.5 rounded-md border border-stone-200">
+                    <span className="text-stone-600 text-xs font-bold uppercase tracking-widest bg-stone-100 px-3 py-1.5 rounded-md border border-stone-200 whitespace-nowrap">
                       2022.09 - 2026.07
                     </span>
                   </div>
                   <div className="flex flex-col justify-center pt-7">
                     <p className="text-stone-700 font-bold text-[1.1rem] mb-1">理学学士，生态学</p>
-                    <p className="text-sm text-stone-500 font-light">B.S., Ecology</p>
+                    <p className="text-sm text-stone-500 font-light">Bachelor of Science, Ecology</p>
                   </div>
                 </div>
 
@@ -652,7 +625,7 @@ export default function App() {
                 <div className="md:hidden flex flex-col">
                   <div className="flex items-center justify-between border-b border-stone-100 pb-5 mb-5">
                     <img src={pkuLogoUrl} alt="Peking University Logo" className="w-14 h-14 object-contain drop-shadow-sm opacity-90" />
-                    <span className="text-stone-600 text-[0.65rem] font-bold uppercase tracking-widest bg-stone-100 px-2 py-1 rounded border border-stone-200">
+                    <span className="text-stone-600 text-[0.65rem] font-bold uppercase tracking-widest bg-stone-100 px-2 py-1 rounded border border-stone-200 whitespace-nowrap">
                       2022.09 - 2026.07
                     </span>
                   </div>
@@ -663,7 +636,7 @@ export default function App() {
                     </div>
                     <div>
                       <p className="text-stone-700 font-bold text-lg mb-0.5">理学学士，生态学</p>
-                      <p className="text-sm text-stone-500 font-light">B.S., Ecology</p>
+                      <p className="text-sm text-stone-500 font-light">Bachelor of Science, Ecology</p>
                     </div>
                   </div>
                 </div>
