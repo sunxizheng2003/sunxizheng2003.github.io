@@ -33,19 +33,19 @@ const ResearchGateIcon = ({ className }) => (
 );
 
 // 完美的几何数学重构 Web of Science (Clarivate) 标志
-// 核心逻辑：3个 2:1 长方形，坐标运用数学测算使得顶角绝对接触，内部形成完美正三角形
+// 通过高精度贝塞尔弧线完美实现：外侧微鼓(约6°弧度)，内外平行，顶角精确相切，中心形成正三角形镂空
 const WosIcon = ({ className }) => (
   <svg viewBox="0 0 24 24" className={className}>
     <g transform="translate(12, 12)">
-      {/* 左侧长方形 (支持 fill-current 自适应主题色) */}
-      <rect x="-6.3094" y="-4" width="4" height="8" className="fill-current group-hover:fill-white transition-colors duration-300" />
-      {/* 右下长方形 (绿色) */}
+      {/* 左侧弧形块 (自适应主题色) */}
+      <path d="M -3 -5.1962 A 100 100 0 0 0 -3 5.1962 L -8 5.1962 A 105 105 0 0 1 -8 -5.1962 Z" className="fill-current group-hover:fill-white transition-colors duration-300" />
+      {/* 右上弧形块 (紫色) */}
       <g transform="rotate(120)">
-        <rect x="-6.3094" y="-4" width="4" height="8" className="fill-[#18D316] group-hover:fill-white transition-colors duration-300" />
+        <path d="M -3 -5.1962 A 100 100 0 0 0 -3 5.1962 L -8 5.1962 A 105 105 0 0 1 -8 -5.1962 Z" className="fill-[#8A2BE2] group-hover:fill-white transition-colors duration-300" />
       </g>
-      {/* 右上长方形 (紫色) */}
+      {/* 右下弧形块 (绿色) */}
       <g transform="rotate(240)">
-        <rect x="-6.3094" y="-4" width="4" height="8" className="fill-[#8A2BE2] group-hover:fill-white transition-colors duration-300" />
+        <path d="M -3 -5.1962 A 100 100 0 0 0 -3 5.1962 L -8 5.1962 A 105 105 0 0 1 -8 -5.1962 Z" className="fill-[#18D316] group-hover:fill-white transition-colors duration-300" />
       </g>
     </g>
   </svg>
@@ -89,6 +89,8 @@ const FadeInSection = ({ children, className = "" }) => {
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  // 控制弹窗的 State：记录当前被点击的项目数据
+  const [selectedProject, setSelectedProject] = useState(null);
 
   const navLinks = [
     { id: 'home', label: '首页', en: 'Home' },
@@ -97,6 +99,60 @@ export default function App() {
     { id: 'publications', label: '发表', en: 'Publications' },
     { id: 'cv', label: '简历', en: 'CV' }
   ];
+
+  // ==========================================
+  // 📚 研究项目数据集中管理 (在这里轻松添加长篇内容！)
+  // ==========================================
+  const researchProjects = [
+    {
+      id: 1,
+      image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      titleZh: "青藏高原高山植物群落时空演变",
+      titleEn: "Spatiotemporal Evolution of Alpine Plant Communities",
+      // 这里是卡片上显示的“简短摘要”
+      summaryZh: "基于长期的野外监测数据，结合遥感影像，分析过去三十年间高山林线交错区植物群落的物种组成变化及其对极端气候事件的响应。",
+      summaryEn: "Based on long-term field monitoring data and remote sensing imagery, this project analyzes the changes in species composition of plant communities in the alpine ecotone and their responses to extreme climate events over the past 30 years.",
+      // 这里是弹窗里显示的“详细内容”（数组的每一项代表一个自然段落）
+      detailsZh: [
+        "高山生态系统对全球气候变化极为敏感。过去半个世纪以来，青藏高原经历了显著的升温过程。本项目依托连续 30 年的固定样地监测数据，旨在揭示高山林线交错区（Alpine Ecotone）植物群落结构的时空演变规律。",
+        "在研究方法上，我们不仅采用了传统的样方调查记录物种多度与盖度，还引入了高分辨率无人机遥感技术，对群落尺度的空间格局进行精细刻画。结合气象站点的数据，我们建立了一系列线性混合效应模型（LMMs）。",
+        "初步研究结果表明：随着极端干旱事件频率的增加，浅根系的草本植物丰度显著下降，而深根系的灌木逐渐占据主导地位。这一发现对于预测未来气候情境下高山生态系统功能的维持具有重要的指导意义。"
+      ],
+      detailsEn: [
+        "Alpine ecosystems are highly sensitive to global climate change. Over the past half-century, the Qinghai-Tibet Plateau has experienced significant warming. Relying on 30 years of continuous permanent plot monitoring data, this project aims to reveal the spatiotemporal evolution rules of plant community structures in the alpine ecotone.",
+        "Methodologically, in addition to traditional quadrat surveys to record species abundance and coverage, we introduced high-resolution UAV remote sensing technology to finely characterize the spatial patterns at the community scale. Combined with meteorological station data, we established a series of linear mixed-effect models (LMMs).",
+        "Preliminary results indicate that with the increasing frequency of extreme drought events, the abundance of shallow-rooted herbaceous plants has significantly decreased, while deep-rooted shrubs have gradually taken dominance. This finding is of great guiding significance for predicting the maintenance of alpine ecosystem functions under future climate scenarios."
+      ]
+    },
+    {
+      id: 2,
+      image: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      titleZh: "植物叶片经济谱的全球尺度验证",
+      titleEn: "Global-Scale Validation of Leaf Economics Spectrum",
+      summaryZh: "整合全球不同气候带的植物功能性状数据，利用系统发育混和模型，重新评估“叶片经济谱”在不同生境类型下的普适性与变异规律。",
+      summaryEn: "Integrating global plant functional trait data across different climatic zones, this project uses phylogenetic mixed models to re-evaluate the universality and variation patterns of the leaf economics spectrum.",
+      detailsZh: [
+        "“叶片经济谱 (Leaf Economics Spectrum, LES)” 是功能生态学领域的核心理论之一，它描述了植物在资源获取与资源保守之间的权衡策略。然而，该理论在某些极端生境（如极度干旱区或高寒地带）是否完全适用，目前仍存在争议。",
+        "本研究通过整合 TRY 全球植物性状数据库（TRY Plant Trait Database）以及我们团队在实地测量的 500 多种植物性状数据，构建了一个包含 10,000 余个物种的庞大数据库。",
+        "通过应用系统发育独立差（PIC）和系统发育广义线性混合模型（PGLMM），我们在控制了物种进化历史的背景下，深入剖析了气候因子（如年均温、年降水量）对性状协变关系的调控作用。结果发现，生境水分的可用性显著改变了比叶面积（SLA）与叶片氮含量之间的斜率关系。"
+      ],
+      detailsEn: [
+        "The 'Leaf Economics Spectrum (LES)' is one of the core theories in functional ecology, describing the trade-off strategies of plants between resource acquisition and resource conservation. However, whether this theory is fully applicable in certain extreme habitats (such as extremely arid or cold regions) remains controversial.",
+        "This study constructed a massive database containing over 10,000 species by integrating the TRY Plant Trait Database and the functional trait data of more than 500 plants measured by our team in the field.",
+        "By applying Phylogenetic Independent Contrasts (PIC) and Phylogenetic Generalized Linear Mixed Models (PGLMM), we deeply analyzed the regulatory role of climate factors (e.g., MAT, MAP) on trait covariation while controlling for evolutionary history. The results found that habitat water availability significantly altered the slope relationship between Specific Leaf Area (SLA) and leaf nitrogen content."
+      ]
+    }
+  ];
+
+  // 监听弹窗开启时，禁止背景页面滚动
+  useEffect(() => {
+    if (selectedProject) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [selectedProject]);
 
   const handleNavClick = (id) => {
     setIsMenuOpen(false);
@@ -123,7 +179,6 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 双语文本组件
   const BilingualText = ({ zh, en, zhClass = "", enClass = "block text-[0.8em] text-stone-400 font-light mt-0.5 tracking-wide" }) => (
     <span>
       <span className={zhClass}>{zh}</span>
@@ -131,21 +186,90 @@ export default function App() {
     </span>
   );
 
-  // 北大官方 Logo URL
   const pkuLogoUrl = "https://www.pku.edu.cn/Uploads/Picture/2019/12/04/u5de790e64c817.png";
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-800 font-sans selection:bg-emerald-100 selection:text-emerald-900 leading-relaxed">
       
-      {/* 极简导航栏 */}
+      {/* --- 全屏弹窗组件 (Modal) --- */}
+      {selectedProject && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-12">
+          {/* 模糊遮罩层 - 点击空白处关闭 */}
+          <div 
+            className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setSelectedProject(null)}
+          ></div>
+          
+          {/* 弹窗内容区 */}
+          <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full animate-in fade-in zoom-in-95 duration-300">
+            {/* 关闭按钮 (绝对定位，不随内容滚动) */}
+            <button 
+              onClick={() => setSelectedProject(null)}
+              className="absolute top-5 right-5 z-10 p-2.5 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-full transition-all"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* 弹窗详细文本区 (包含标题和图片，整体可上下滑动) */}
+            <div className="overflow-y-auto p-6 md:p-10 lg:p-12 space-y-10">
+              
+              {/* 随内容滚动的标题部分 */}
+              <div className="pr-12 border-b border-stone-100 pb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-stone-900 mb-3 leading-snug">
+                  {selectedProject.titleZh}
+                </h2>
+                <p className="text-stone-500 font-light text-sm md:text-base tracking-wide">
+                  {selectedProject.titleEn}
+                </p>
+              </div>
+
+              {/* 优雅的文章内部配图 */}
+              <div className="w-full h-56 sm:h-72 lg:h-80 rounded-xl overflow-hidden bg-stone-100">
+                <img src={selectedProject.image} alt="Project Cover" className="w-full h-full object-cover" />
+              </div>
+
+              {/* 中文正文段落 */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-1.5 h-6 bg-emerald-600 rounded-full"></div>
+                  <h3 className="text-lg font-bold text-stone-900 tracking-widest">中文详情</h3>
+                </div>
+                {selectedProject.detailsZh.map((paragraph, index) => (
+                  <p key={index} className="text-stone-700 leading-loose text-[1.05rem]">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+
+              {/* 分割线 */}
+              <div className="w-full h-px bg-stone-100"></div>
+
+              {/* 英文正文段落 */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-1.5 h-6 bg-stone-300 rounded-full"></div>
+                  <h3 className="text-lg font-bold text-stone-400 tracking-widest uppercase">English Details</h3>
+                </div>
+                {selectedProject.detailsEn.map((paragraph, index) => (
+                  <p key={index} className="text-stone-500 leading-relaxed font-light text-[0.95rem]">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 导航栏 */}
       <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-50 border-b border-stone-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-2 cursor-pointer group" onClick={() => handleNavClick('home')}>
               <Leaf className="w-6 h-6 text-emerald-600 group-hover:scale-110 transition-transform" />
               <div className="flex flex-col ml-2">
-                <span className="text-lg font-bold text-stone-800 leading-none">林深</span>
-                <span className="text-xs text-stone-400 font-medium tracking-widest mt-1 uppercase">Shen Lin</span>
+                <span className="text-lg font-bold text-stone-800 leading-none">孙熙正</span>
+                <span className="text-xs text-stone-400 font-medium tracking-widest mt-1 uppercase">Xi-Zheng Sun</span>
               </div>
             </div>
             
@@ -176,20 +300,17 @@ export default function App() {
         </div>
       </nav>
 
-      {/* Hero 首页区域 - 上下间距缩减，左右严格对齐，底部横栏 */}
+      {/* Hero 首页区域 */}
       <section id="home" className="pt-24 pb-8 lg:pt-32 lg:pb-10 overflow-hidden relative min-h-[85vh] flex flex-col justify-center">
         <div className="absolute top-20 right-0 w-[40rem] h-[40rem] bg-emerald-100/50 rounded-full blur-3xl -z-10 opacity-60"></div>
         <div className="max-w-6xl mx-auto px-6 lg:px-8 w-full flex flex-col flex-1">
           
-          {/* 上半部：左侧文字，右侧图片 */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-10 lg:gap-16 flex-1 py-10">
-            
-            {/* 左侧文本区 */}
             <FadeInSection className="md:w-[55%] lg:w-3/5 text-center md:text-left flex flex-col justify-center">
               <div className="inline-flex flex-col sm:flex-row items-center sm:space-x-4 mb-8 mx-auto md:mx-0 w-fit">
-                <span className="text-emerald-700 font-medium tracking-wide">生态学博士候选人</span>
+                <span className="text-emerald-700 font-medium tracking-wide">生态学本科生</span>
                 <span className="hidden sm:inline text-stone-300">|</span>
-                <span className="text-stone-400 font-light text-sm tracking-widest uppercase mt-1 sm:mt-0">Ph.D. Candidate in Ecology</span>
+                <span className="text-stone-400 font-light text-sm tracking-widest uppercase mt-1 sm:mt-0">B.S. Candidate in Ecology</span>
               </div>
               
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-stone-900 mb-8 leading-tight">
@@ -203,52 +324,46 @@ export default function App() {
               </p>
               
               <div className="text-base text-stone-600 font-light max-w-2xl mx-auto md:mx-0 space-y-4">
-                <p>你好！我是林深，北京大学城市与环境学院的在读博士生。我的研究重点是全球气候变化背景下高山植物群落的响应机制与适应策略。我致力于用数据和野外调查，为生态系统保护提供科学依据。</p>
+                <p>你好！我是孙熙正，北京大学城市与环境学院的在读本科生。我正在尝试搭建个人网页，本网页中的内容纯属虚构，切勿当真。</p>
                 <p className="text-sm text-stone-400">Hello! I am Shen Lin, a Ph.D. student at the College of Urban and Environmental Sciences, Peking University. My research focuses on the response mechanisms and adaptation strategies of alpine plant communities under global climate change.</p>
               </div>
             </FadeInSection>
             
-            {/* 右侧照片 - 尺寸已按要求缩小 */}
             <FadeInSection className="md:w-[45%] lg:w-2/5 flex justify-center md:justify-end">
               <div className="relative w-48 h-48 sm:w-60 sm:h-60 lg:w-72 lg:h-72">
                 <div className="absolute inset-0 bg-gradient-to-tr from-emerald-200 to-teal-100 rounded-full blur-xl opacity-60 translate-x-4 translate-y-4"></div>
                 <img 
-                  src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                  alt="林深在野外工作" 
+                  src="/images/avatar.jpg" 
+                  alt="孙熙正" 
                   className="relative w-full h-full object-cover rounded-full border-4 border-white shadow-xl z-10"
                 />
               </div>
             </FadeInSection>
-
           </div>
 
-          {/* 首页最下部：学术链接与邮箱全宽栏 */}
           <FadeInSection className="w-full border-t border-stone-200/60 pt-6 pb-2 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex flex-wrap gap-4">
-              {/* 各大平台：在浅色背景默认即显示自身品牌色，高亮吸睛 */}
-              <a href="#" title="ORCID" className="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-[#A6CE39] transition-all duration-300 group shadow-sm border border-stone-200 hover:border-transparent hover:-translate-y-1">
+              <a href="https://orcid.org/0009-0008-7367-6227" target="_blank" rel="noopener noreferrer" title="ORCID" className="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-[#A6CE39] transition-all duration-300 group shadow-sm border border-stone-200 hover:border-transparent hover:-translate-y-1">
                 <OrcidIcon className="w-5 h-5 text-[#A6CE39] group-hover:text-white transition-colors" />
               </a>
               <a href="#" title="Google Scholar" className="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-[#4285F4] transition-all duration-300 group shadow-sm border border-stone-200 hover:border-transparent hover:-translate-y-1">
                 <ScholarIcon className="w-5 h-5 transition-colors" />
               </a>
-              <a href="#" title="ResearchGate" className="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-[#00CCBB] transition-all duration-300 group shadow-sm border border-stone-200 hover:border-transparent hover:-translate-y-1">
+              <a href="https://www.researchgate.net/profile/Xi-Zheng-Sun" target="_blank" rel="noopener noreferrer" title="ResearchGate" className="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-[#00CCBB] transition-all duration-300 group shadow-sm border border-stone-200 hover:border-transparent hover:-translate-y-1">
                 <ResearchGateIcon className="w-5 h-5 text-[#00CCBB] group-hover:text-white transition-colors" />
               </a>
-              <a href="#" title="Web of Science" className="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-[#5E33BF] transition-all duration-300 group shadow-sm border border-stone-200 hover:border-transparent hover:-translate-y-1">
-                {/* 浅色背景下左侧设为深色 text-stone-700 */}
+              <a href="https://webofscience.clarivate.cn/wos/author/record/KGK-4195-2024" target="_blank" rel="noopener noreferrer" title="Web of Science" className="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-[#5E33BF] transition-all duration-300 group shadow-sm border border-stone-200 hover:border-transparent hover:-translate-y-1">
                 <WosIcon className="w-5 h-5 text-stone-700 group-hover:text-white transition-colors" />
               </a>
-              <a href="#" title="GitHub" className="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-stone-800 transition-all duration-300 group shadow-sm border border-stone-200 hover:border-transparent hover:-translate-y-1">
+              <a href="https://github.com/sunxizheng2003" target="_blank" rel="noopener noreferrer" title="GitHub" className="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:bg-stone-800 transition-all duration-300 group shadow-sm border border-stone-200 hover:border-transparent hover:-translate-y-1">
                 <Github className="w-5 h-5 text-stone-700 group-hover:text-white transition-colors" />
               </a>
             </div>
             
-            <a href="mailto:lin.shen@pku.edu.cn" className="inline-flex items-center text-stone-500 hover:text-emerald-600 font-medium transition-colors bg-white px-5 py-2.5 rounded-full border border-stone-200 shadow-sm hover:shadow-md">
-              <Mail className="w-4 h-4 mr-2" /> lin.shen@pku.edu.cn
+            <a href="mailto:sunxizheng@stu.pku.edu.cn" className="inline-flex items-center text-stone-500 hover:text-emerald-600 font-medium transition-colors bg-white px-5 py-2.5 rounded-full border border-stone-200 shadow-sm hover:shadow-md">
+              <Mail className="w-4 h-4 mr-2" /> sunxizheng@stu.pku.edu.cn
             </a>
           </FadeInSection>
-
         </div>
       </section>
 
@@ -313,42 +428,31 @@ export default function App() {
               </h2>
             </div>
             
+            {/* 动态渲染项目卡片 */}
             <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
-              <div className="group bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
-                <div className="h-56 overflow-hidden bg-stone-100 border-b border-stone-100">
-                  <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="高山生态" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
-                </div>
-                <div className="p-8 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold text-stone-900 mb-4 group-hover:text-emerald-600 transition-colors">
-                    <BilingualText zh="青藏高原高山植物群落时空演变" en="Spatiotemporal Evolution of Alpine Plant Communities" />
-                  </h3>
-                  <div className="font-light space-y-2 mb-6 flex-1">
-                    <p className="text-stone-600">基于长期的野外监测数据，结合遥感影像，分析过去三十年间高山林线交错区植物群落的物种组成变化及其对极端气候事件的响应。</p>
-                    <p className="text-sm text-stone-400 line-clamp-3">Based on long-term field monitoring data and remote sensing imagery, this project analyzes the changes in species composition of plant communities in the alpine ecotone and their responses to extreme climate events over the past 30 years.</p>
+              {researchProjects.map((project) => (
+                <div key={project.id} className="group bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+                  <div className="h-56 overflow-hidden bg-stone-100 border-b border-stone-100 relative">
+                    <img src={project.image} alt="Research Cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                   </div>
-                  <button className="inline-flex items-center px-4 py-2 border border-stone-200 rounded-lg text-sm font-medium text-stone-600 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-colors self-start">
-                    <BilingualText zh="阅读详情" en="Read More" enClass="ml-1 text-[0.8em] font-light" /> <ChevronRight className="w-4 h-4 ml-1" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="group bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
-                <div className="h-56 overflow-hidden bg-stone-100 border-b border-stone-100">
-                  <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="植物性状" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
-                </div>
-                <div className="p-8 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold text-stone-900 mb-4 group-hover:text-emerald-600 transition-colors">
-                    <BilingualText zh="植物叶片经济谱的全球尺度验证" en="Global-Scale Validation of Leaf Economics Spectrum" />
-                  </h3>
-                  <div className="font-light space-y-2 mb-6 flex-1">
-                    <p className="text-stone-600">整合全球不同气候带的植物功能性状数据，利用系统发育混和模型，重新评估“叶片经济谱”在不同生境类型下的普适性与变异规律。</p>
-                    <p className="text-sm text-stone-400 line-clamp-3">Integrating global plant functional trait data across different climatic zones, this project uses phylogenetic mixed models to re-evaluate the universality and variation patterns of the leaf economics spectrum.</p>
+                  <div className="p-8 flex-1 flex flex-col">
+                    <h3 className="text-xl font-bold text-stone-900 mb-4 group-hover:text-emerald-600 transition-colors">
+                      <BilingualText zh={project.titleZh} en={project.titleEn} />
+                    </h3>
+                    <div className="font-light space-y-2 mb-6 flex-1">
+                      <p className="text-stone-600">{project.summaryZh}</p>
+                      <p className="text-sm text-stone-400 line-clamp-3">{project.summaryEn}</p>
+                    </div>
+                    {/* 点击按钮触发弹窗 */}
+                    <button 
+                      onClick={() => setSelectedProject(project)}
+                      className="inline-flex items-center px-4 py-2 border border-stone-200 rounded-lg text-sm font-medium text-stone-600 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-colors self-start cursor-pointer"
+                    >
+                      <BilingualText zh="阅读详情" en="Read More" enClass="ml-1 text-[0.8em] font-light" /> <ChevronRight className="w-4 h-4 ml-1" />
+                    </button>
                   </div>
-                  <button className="inline-flex items-center px-4 py-2 border border-stone-200 rounded-lg text-sm font-medium text-stone-600 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-colors self-start">
-                    <BilingualText zh="阅读详情" en="Read More" enClass="ml-1 text-[0.8em] font-light" /> <ChevronRight className="w-4 h-4 ml-1" />
-                  </button>
                 </div>
-              </div>
+              ))}
             </div>
           </FadeInSection>
         </div>
@@ -366,8 +470,6 @@ export default function App() {
             </div>
             
             <div className="space-y-6">
-              
-              {/* 论文条目 1 - 图片卡片版 */}
               <div className="bg-white border border-stone-200 rounded-2xl p-5 md:p-6 shadow-sm hover:border-emerald-300 hover:shadow-md transition-all duration-300 group flex flex-col md:flex-row gap-6 lg:gap-8 items-center md:items-stretch">
                 <div className="w-full md:w-56 shrink-0 rounded-xl overflow-hidden border border-stone-100 aspect-[4/3] md:aspect-auto">
                   <img 
@@ -401,7 +503,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 论文条目 2 - 图片卡片版 */}
               <div className="bg-white border border-stone-200 rounded-2xl p-5 md:p-6 shadow-sm hover:border-teal-300 hover:shadow-md transition-all duration-300 group flex flex-col md:flex-row gap-6 lg:gap-8 items-center md:items-stretch">
                 <div className="w-full md:w-56 shrink-0 rounded-xl overflow-hidden border border-stone-100 aspect-[4/3] md:aspect-auto">
                   <img 
@@ -431,10 +532,8 @@ export default function App() {
                   </div>
                 </div>
               </div>
-
             </div>
             
-            {/* 列表外链按钮优化：堆叠布局无分割线 */}
             <div className="mt-10 flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
               <a href="#" className="group inline-flex flex-col items-center justify-center px-8 py-3.5 bg-white border border-stone-200 rounded-xl hover:border-emerald-500 hover:shadow-sm transition-all">
                 <span className="flex items-center text-sm font-medium text-stone-700 group-hover:text-emerald-700">
@@ -444,7 +543,7 @@ export default function App() {
                   View full list on Google Scholar
                 </span>
               </a>
-              <a href="#" className="group inline-flex flex-col items-center justify-center px-8 py-3.5 bg-white border border-stone-200 rounded-xl hover:border-emerald-500 hover:shadow-sm transition-all">
+              <a href="https://www.researchgate.net/profile/Xi-Zheng-Sun" target="_blank" rel="noopener noreferrer" className="group inline-flex flex-col items-center justify-center px-8 py-3.5 bg-white border border-stone-200 rounded-xl hover:border-emerald-500 hover:shadow-sm transition-all">
                 <span className="flex items-center text-sm font-medium text-stone-700 group-hover:text-emerald-700">
                   在 ResearchGate 查看完整列表 <ExternalLink className="w-4 h-4 ml-1.5" />
                 </span>
@@ -459,7 +558,6 @@ export default function App() {
 
       {/* 简历 CV */}
       <section id="cv" className="py-24 bg-white border-t border-stone-200 relative overflow-hidden">
-        {/* 背景超大号隐约北大水印 Logo */}
         <div className="absolute top-1/2 left-3/4 -translate-y-1/2 opacity-[0.03] pointer-events-none grayscale">
            <img src={pkuLogoUrl} alt="PKU watermark" className="w-[800px] h-[800px] object-contain" />
         </div>
@@ -475,54 +573,96 @@ export default function App() {
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               
-              {/* 博士学历卡片 */}
-              <div className="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-300 flex flex-col md:flex-row gap-6 md:gap-10 group">
-                {/* 左侧：高校标志与纯英年份 */}
-                <div className="md:w-48 shrink-0 flex flex-col items-start border-b md:border-b-0 md:border-r border-stone-100 pb-6 md:pb-0 md:pr-6">
-                  <img src={pkuLogoUrl} alt="Peking University Logo" className="w-16 h-16 object-contain mb-5 drop-shadow-sm" />
-                  <span className="text-emerald-700 text-xs font-bold uppercase tracking-widest bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100/50">
-                    2026.09 - PRESENT
-                  </span>
-                </div>
+              {/* 博士学历卡片（完美网格对齐版） */}
+              <div className="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-300 group flex flex-col md:block">
                 
-                {/* 右侧：学历细节详情 */}
-                <div className="flex-1 flex flex-col justify-center">
-                  <div className="mb-5 pb-4 border-b border-stone-50">
-                    <h3 className="text-xl md:text-2xl font-bold text-stone-900">北京大学，城市与环境学院</h3>
-                    <p className="text-[0.7rem] text-stone-400 font-medium tracking-widest uppercase mt-1">Peking University, College of Urban and Environmental Sciences</p>
+                {/* 桌面端：CSS Grid 精确空隙对齐 */}
+                <div className="hidden md:grid grid-cols-[11rem_1fr] gap-x-8">
+                  {/* 第一行：学校 */}
+                  <div className="flex items-center border-r border-stone-100 pb-7 pr-6">
+                    <img src={pkuLogoUrl} alt="Peking University Logo" className="w-[4.25rem] h-[4.25rem] object-contain drop-shadow-sm" />
+                  </div>
+                  <div className="flex flex-col justify-center border-b border-stone-50 pb-7">
+                    <h3 className="text-xl md:text-2xl font-bold text-stone-900 leading-tight">北京大学，城市与环境学院</h3>
+                    <p className="text-[0.7rem] text-stone-400 font-medium tracking-widest uppercase mt-1.5">Peking University, College of Urban and Environmental Sciences</p>
                   </div>
                   
+                  {/* 第二行：学位 */}
+                  <div className="flex items-center border-r border-stone-100 pt-7 pr-6">
+                    <span className="text-emerald-700 text-xs font-bold uppercase tracking-widest bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100/50">
+                      2026.09 - PRESENT
+                    </span>
+                  </div>
+                  <div className="flex flex-col justify-center pt-7">
+                    <p className="text-stone-700 font-bold text-[1.1rem] mb-1">理学博士，生态学</p>
+                    <p className="text-sm text-stone-500 font-light">Ph.D. in Science, Ecology</p>
+                  </div>
+                </div>
+
+                {/* 移动端：保持优雅的堆叠结构 */}
+                <div className="md:hidden flex flex-col">
+                  <div className="flex items-center justify-between border-b border-stone-100 pb-5 mb-5">
+                    <img src={pkuLogoUrl} alt="Peking University Logo" className="w-14 h-14 object-contain drop-shadow-sm" />
+                    <span className="text-emerald-700 text-[0.65rem] font-bold uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded border border-emerald-100/50">
+                      2026.09 - PRESENT
+                    </span>
+                  </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-stone-700 font-bold text-lg mb-1">理学博士，生态学</p>
+                      <h3 className="text-xl font-bold text-stone-900 leading-tight">北京大学，城市与环境学院</h3>
+                      <p className="text-[0.65rem] text-stone-400 font-medium tracking-widest uppercase mt-1">Peking University, College of Urban and Environmental Sciences</p>
+                    </div>
+                    <div>
+                      <p className="text-stone-700 font-bold text-lg mb-0.5">理学博士，生态学</p>
                       <p className="text-sm text-stone-500 font-light">Ph.D. in Science, Ecology</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* 本科学历卡片 */}
-              <div className="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md hover:border-stone-400 transition-all duration-300 flex flex-col md:flex-row gap-6 md:gap-10 group">
-                {/* 左侧：高校标志与纯英年份 */}
-                <div className="md:w-48 shrink-0 flex flex-col items-start border-b md:border-b-0 md:border-r border-stone-100 pb-6 md:pb-0 md:pr-6">
-                  <img src={pkuLogoUrl} alt="Peking University Logo" className="w-16 h-16 object-contain mb-5 drop-shadow-sm opacity-90" />
-                  <span className="text-stone-600 text-xs font-bold uppercase tracking-widest bg-stone-100 px-3 py-1.5 rounded-md border border-stone-200">
-                    2022.09 - 2026.07
-                  </span>
-                </div>
+              {/* 本科学历卡片（完美网格对齐版） */}
+              <div className="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md hover:border-stone-400 transition-all duration-300 group flex flex-col md:block">
                 
-                {/* 右侧：学历细节详情 */}
-                <div className="flex-1 flex flex-col justify-center">
-                  <div className="mb-5 pb-4 border-b border-stone-50">
-                    <h3 className="text-xl md:text-2xl font-bold text-stone-900">北京大学，城市与环境学院</h3>
-                    <p className="text-[0.7rem] text-stone-400 font-medium tracking-widest uppercase mt-1">Peking University, College of Urban and Environmental Sciences</p>
+                {/* 桌面端：CSS Grid 精确空隙对齐 */}
+                <div className="hidden md:grid grid-cols-[11rem_1fr] gap-x-8">
+                  {/* 第一行：学校 */}
+                  <div className="flex items-center border-r border-stone-100 pb-7 pr-6">
+                    <img src={pkuLogoUrl} alt="Peking University Logo" className="w-[4.25rem] h-[4.25rem] object-contain drop-shadow-sm opacity-90" />
+                  </div>
+                  <div className="flex flex-col justify-center border-b border-stone-50 pb-7">
+                    <h3 className="text-xl md:text-2xl font-bold text-stone-900 leading-tight">北京大学，城市与环境学院</h3>
+                    <p className="text-[0.7rem] text-stone-400 font-medium tracking-widest uppercase mt-1.5">Peking University, College of Urban and Environmental Sciences</p>
                   </div>
                   
+                  {/* 第二行：学位 */}
+                  <div className="flex items-center border-r border-stone-100 pt-7 pr-6">
+                    <span className="text-stone-600 text-xs font-bold uppercase tracking-widest bg-stone-100 px-3 py-1.5 rounded-md border border-stone-200">
+                      2022.09 - 2026.07
+                    </span>
+                  </div>
+                  <div className="flex flex-col justify-center pt-7">
+                    <p className="text-stone-700 font-bold text-[1.1rem] mb-1">理学学士，生态学</p>
+                    <p className="text-sm text-stone-500 font-light">B.S., Ecology</p>
+                  </div>
+                </div>
+
+                {/* 移动端：保持优雅的堆叠结构 */}
+                <div className="md:hidden flex flex-col">
+                  <div className="flex items-center justify-between border-b border-stone-100 pb-5 mb-5">
+                    <img src={pkuLogoUrl} alt="Peking University Logo" className="w-14 h-14 object-contain drop-shadow-sm opacity-90" />
+                    <span className="text-stone-600 text-[0.65rem] font-bold uppercase tracking-widest bg-stone-100 px-2 py-1 rounded border border-stone-200">
+                      2022.09 - 2026.07
+                    </span>
+                  </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-stone-700 font-bold text-lg mb-1">理学学士，生态学</p>
+                      <h3 className="text-xl font-bold text-stone-900 leading-tight">北京大学，城市与环境学院</h3>
+                      <p className="text-[0.65rem] text-stone-400 font-medium tracking-widest uppercase mt-1">Peking University, College of Urban and Environmental Sciences</p>
+                    </div>
+                    <div>
+                      <p className="text-stone-700 font-bold text-lg mb-0.5">理学学士，生态学</p>
                       <p className="text-sm text-stone-500 font-light">B.S., Ecology</p>
                     </div>
                   </div>
@@ -538,39 +678,35 @@ export default function App() {
       <footer className="bg-[#0A0A0A] text-stone-400 py-20 border-t border-stone-900">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
-            
-            {/* 左侧：联系方式 */}
             <div>
               <div className="flex items-center mb-6">
                 <Leaf className="w-6 h-6 text-emerald-500 mr-3" />
                 <h2 className="text-2xl font-bold text-white tracking-wide">
-                  林深 <span className="text-stone-600 mx-2">|</span> Shen Lin
+                  孙熙正 <span className="text-stone-600 mx-2">|</span> Xi-Zheng Sun
                 </h2>
               </div>
-              <a href="mailto:lin.shen@pku.edu.cn" className="group inline-flex items-center text-lg text-stone-300 hover:text-white transition-colors">
+              <a href="mailto:sunxizheng@stu.pku.edu.cn" className="group inline-flex items-center text-lg text-stone-300 hover:text-white transition-colors">
                 <span className="border-b border-stone-700 group-hover:border-emerald-500 transition-colors pb-1">
-                  lin.shen@pku.edu.cn
+                  sunxizheng@stu.pku.edu.cn
                 </span>
                 <ArrowUpRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-emerald-500" />
               </a>
             </div>
             
-            {/* 右侧：纯正圆形学术徽标 - 深色版 */}
             <div className="flex flex-wrap gap-5">
-              <a href="#" title="ORCID" className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center hover:bg-[#A6CE39] hover:scale-110 transition-all duration-300 group border border-stone-800 hover:border-transparent shadow-lg">
+              <a href="https://orcid.org/0009-0008-7367-6227" target="_blank" rel="noopener noreferrer" title="ORCID" className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center hover:bg-[#A6CE39] hover:scale-110 transition-all duration-300 group border border-stone-800 hover:border-transparent shadow-lg">
                 <OrcidIcon className="w-5 h-5" />
               </a>
               <a href="#" title="Google Scholar" className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center hover:bg-[#4285F4] hover:scale-110 transition-all duration-300 group border border-stone-800 hover:border-transparent shadow-lg">
                 <ScholarIcon className="w-5 h-5" />
               </a>
-              <a href="#" title="ResearchGate" className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center hover:bg-[#00CCBB] hover:scale-110 transition-all duration-300 group border border-stone-800 hover:border-transparent shadow-lg">
+              <a href="https://www.researchgate.net/profile/Xi-Zheng-Sun" target="_blank" rel="noopener noreferrer" title="ResearchGate" className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center hover:bg-[#00CCBB] hover:scale-110 transition-all duration-300 group border border-stone-800 hover:border-transparent shadow-lg">
                 <ResearchGateIcon className="w-5 h-5 text-stone-400 group-hover:text-white transition-colors" />
               </a>
-              <a href="#" title="Web of Science" className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center hover:bg-[#5E33BF] hover:scale-110 transition-all duration-300 group border border-stone-800 hover:border-transparent shadow-lg">
-                {/* 页脚左侧图形自动使用 text-stone-400 (浅灰色) */}
+              <a href="https://webofscience.clarivate.cn/wos/author/record/KGK-4195-2024" target="_blank" rel="noopener noreferrer" title="Web of Science" className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center hover:bg-[#5E33BF] hover:scale-110 transition-all duration-300 group border border-stone-800 hover:border-transparent shadow-lg">
                 <WosIcon className="w-5 h-5 text-stone-400 group-hover:text-white transition-colors" />
               </a>
-              <a href="#" title="GitHub" className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center hover:bg-stone-700 hover:scale-110 transition-all duration-300 group border border-stone-800 hover:border-transparent shadow-lg">
+              <a href="https://github.com/sunxizheng2003" target="_blank" rel="noopener noreferrer" title="GitHub" className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center hover:bg-stone-700 hover:scale-110 transition-all duration-300 group border border-stone-800 hover:border-transparent shadow-lg">
                 <Github className="w-5 h-5 text-stone-400 group-hover:text-white transition-colors duration-300" />
               </a>
             </div>

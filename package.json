@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://github.com/sunxizheng2003/sunxizheng2003.github.io/",
+  "homepage": "https://sunxizheng2003.github.io",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
